@@ -18,7 +18,7 @@ def statusCvn(server):
     sample = players.sample
     if sample is not None:
         pSample = list(map(lambda p: p.name, sample))
-        ret += f": {pSample}"
+        ret += f" {pSample}"
 
     return ret
 
