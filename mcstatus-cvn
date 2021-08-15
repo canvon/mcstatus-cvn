@@ -6,6 +6,8 @@ import argparse
 
 import mcstatus
 
+SLEEP_DEFAULT = 3*60  # 3 minutes
+
 def statusCvn(server):
     status = server.status()
     players = server.players
@@ -14,9 +16,16 @@ def statusCvn(server):
     pSample = map(lambda p: p.name, players.sample)
     return f"Players {pOnline}/{pMax}: {pSample}"
 
-def loopStatus(hostname, port):
+def loopStatus(hostname, port, sleep=SLEEP_DEFAULT):
     server = mcstatus.MinecraftServer(hostname, port)
+
+    first = True
     while True:
+        if first:
+            first = False
+        else:
+            time.sleep(sleep)
+
         ts = time.strftime("%Y-%m-%d %H:%M:%S")
         s = None
         print(f"{ts}: ", end='', flush=True)
@@ -45,12 +54,15 @@ def main(argv):
     parser.add_argument(
         'port', metavar='PORT', type=int,
         help='Port number of Minecraft server')
+    parser.add_argument(
+        '--sleep', metavar='SLEEP_SECONDS', default=SLEEP_DEFAULT, type=int,
+        help='Seconds to sleep between each iteration of the loop')
 
     # Handle command-line, including --help etc.
     args = parser.parse_args()
 
     # Enter loop.
-    loopStatus(args.hostname, args.port)
+    loopStatus(args.hostname, args.port, args.sleep)
 
     # Indicate clean exit via exit code 0.
     # (Assume that, if the loop returns, everything is alright;
