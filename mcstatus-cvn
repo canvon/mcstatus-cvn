@@ -1,0 +1,57 @@
+#!/usr/bin/env python3
+
+import sys
+import time
+import argparse
+
+import mcstatus
+
+def statusCvn(server):
+    status = server.status()
+    players = server.players
+    pOnline = players.online
+    pMax = players.max
+    pSample = map(lambda p: p.name, players.sample)
+    return f"Players {pOnline}/{pMax}: {pSample}"
+
+def loopStatus(hostname, port):
+    server = mcstatus.MinecraftServer(hostname, port)
+    while True:
+        ts = time.strftime("%Y-%m-%d %H:%M:%S")
+        s = None
+        print(f"{ts}: ", end='', flush=True)
+        try:
+            s = statusCvn(server)
+        except KeyboardInterrupt:
+            print("(Keyboard interrupt. Exiting loop.)", flush=True)
+            break
+        except Exception as ex:
+            print(f"(Error: {ex})", flush=True)
+            continue
+        print(s, flush=True)
+
+def main(argv):
+    if not isinstance(argv, list):
+        raise TypeError(f"List of command-line arguments argv needs to be (derived from) type list, but got type {type(argv).__name__:r}")
+    if not len(argv) >= 1:
+        raise ValueError(f"List of command-line arguments argv needs to at least contain the script name")
+
+    # Prepare command-line arguments parser.
+    parser = argparse.ArgumentParser(
+        description="Minecraft status script which wraps Dinnerbone's mcstatus to loop over only the data of interest to canvon")
+    parser.add_argument('hostname', type=str, help='Hostname of the Minecraft server to query in a loop')
+    parser.add_argument('port', type=int, help='Port number of Minecraft server')
+
+    # Handle command-line, including --help etc.
+    args = parser.parse_args()
+
+    # Enter loop.
+    loopStatus(args.hostname, args.port)
+
+    # Indicate clean exit via exit code 0.
+    # (Assume that, if the loop returns, everything is alright;
+    # errors to be reported via exception handling.)
+    return 0
+
+if __name__ == '__main__':
+    sys.exit(main(sys.argv))
