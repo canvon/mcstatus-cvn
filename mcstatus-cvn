@@ -21,15 +21,21 @@ def loopStatus(hostname, port, sleep=SLEEP_DEFAULT):
 
     first = True
     while True:
+        prev_ex = None
         if first:
             first = False
         else:
-            time.sleep(sleep)
+            try:
+                time.sleep(sleep)
+            except KeyboardInterrupt as ex:
+                prev_ex = ex
 
         ts = time.strftime("%Y-%m-%d %H:%M:%S")
         s = None
         print(f"{ts}: ", end='', flush=True)
         try:
+            if prev_ex is not None:
+                raise prev_ex
             s = statusCvn(server)
         except KeyboardInterrupt:
             print("(Keyboard interrupt. Exiting loop.)", flush=True)
