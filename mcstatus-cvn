@@ -39,8 +39,12 @@ def main(argv):
     # Prepare command-line arguments parser.
     parser = argparse.ArgumentParser(
         description="Minecraft status script which wraps Dinnerbone's mcstatus to loop over only the data of interest to canvon")
-    parser.add_argument('hostname', type=str, help='Hostname of the Minecraft server to query in a loop')
-    parser.add_argument('port', type=int, help='Port number of Minecraft server')
+    parser.add_argument(
+        'hostname', metavar='HOSTNAME', type=str,
+        help='Hostname of the Minecraft server to query in a loop')
+    parser.add_argument(
+        'port', metavar='PORT', type=int,
+        help='Port number of Minecraft server')
 
     # Handle command-line, including --help etc.
     args = parser.parse_args()
