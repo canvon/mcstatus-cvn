@@ -10,7 +10,7 @@ SLEEP_DEFAULT = 3*60  # 3 minutes
 
 def statusCvn(server):
     status = server.status()
-    players = server.players
+    players = status.players
     pOnline = players.online
     pMax = players.max
     pSample = map(lambda p: p.name, players.sample)
