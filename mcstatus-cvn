@@ -13,8 +13,14 @@ def statusCvn(server):
     players = status.players
     pOnline = players.online
     pMax = players.max
-    pSample = map(lambda p: p.name, players.sample)
-    return f"Players {pOnline}/{pMax}: {pSample}"
+    ret = f"Players {pOnline}/{pMax}"
+
+    sample = players.sample
+    if sample is not None:
+        pSample = list(map(lambda p: p.name, sample))
+        ret += f": {pSample}"
+
+    return ret
 
 def loopStatus(hostname, port, sleep=SLEEP_DEFAULT):
     server = mcstatus.MinecraftServer(hostname, port)
