@@ -47,7 +47,7 @@ def loopStatus(hostname, port, sleep=SLEEP_DEFAULT):
 
 def main(argv):
     if not isinstance(argv, list):
-        raise TypeError(f"List of command-line arguments argv needs to be (derived from) type list, but got type {type(argv).__name__:r}")
+        raise TypeError(f"List of command-line arguments argv needs to be (derived from) type list, but got type {type(argv).__name__!r}")
     if not len(argv) >= 1:
         raise ValueError(f"List of command-line arguments argv needs to at least contain the script name")
 
