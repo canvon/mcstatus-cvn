@@ -21,9 +21,10 @@ def statusCvn(server):
 
     return ret
 
-def loopStatus(hostname, port, sleep=SLEEP_DEFAULT):
+def loopStatus(hostname, port, sleep=SLEEP_DEFAULT, diff=False):
     server = mcstatus.MinecraftServer(hostname, port)
 
+    s = None
     first = True
     while True:
         prev_ex = None
@@ -36,19 +37,33 @@ def loopStatus(hostname, port, sleep=SLEEP_DEFAULT):
                 prev_ex = ex
 
         ts = time.strftime("%Y-%m-%d %H:%M:%S")
+        prev_s = s
         s = None
-        print(f"{ts}: ", end='', flush=True)
+
+        def print_ts():
+            print(f"{ts}: ", end='', flush=True)
+
+        if not diff:
+            print_ts()
+
         try:
             if prev_ex is not None:
                 raise prev_ex
             s = statusCvn(server)
         except KeyboardInterrupt:
+            if diff:
+                print_ts()
             print("(Keyboard interrupt. Exiting loop.)", flush=True)
             break
         except Exception as ex:
-            print(f"(Error: {ex})", flush=True)
-            continue
-        print(s, flush=True)
+            s = f"(Error: {ex})"
+
+        if not diff:
+            print(s, flush=True)
+        else:
+            if s != prev_s:
+                print_ts()
+                print(f"Changed to: {s}", flush=True)
 
 def main(argv):
     if not isinstance(argv, list):
@@ -68,12 +83,15 @@ def main(argv):
     parser.add_argument(
         '--sleep', metavar='SLEEP_SECONDS', default=SLEEP_DEFAULT, type=int,
         help='Seconds to sleep between each iteration of the loop')
+    parser.add_argument(
+        '--diff', default=False, action='store_true',
+        help='Output only when something has changed, i.e., when there is a difference')
 
     # Handle command-line, including --help etc.
     args = parser.parse_args()
 
     # Enter loop.
-    loopStatus(args.hostname, args.port, args.sleep)
+    loopStatus(args.hostname, args.port, args.sleep, args.diff)
 
     # Indicate clean exit via exit code 0.
     # (Assume that, if the loop returns, everything is alright;
