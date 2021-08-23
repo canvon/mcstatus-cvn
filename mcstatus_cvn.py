@@ -16,6 +16,7 @@ def statusCvn(server):
     sample = players.sample
     if sample is not None:
         pSample = list(map(lambda p: p.name, sample))
+        pSample.sort()  # Order seems to be random without this.
         ret += f" {pSample}"
 
     return ret
