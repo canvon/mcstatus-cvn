@@ -1,5 +1,6 @@
 import sys
 import time
+import datetime
 import argparse
 
 import mcstatus
@@ -25,6 +26,7 @@ def loopStatus(hostname, port, sleep=SLEEP_DEFAULT, diff=False):
     server = mcstatus.MinecraftServer(hostname, port)
 
     saved_s = None
+    saved_s_time = None
     first = True
     while True:
         prev_ex = None
@@ -36,8 +38,9 @@ def loopStatus(hostname, port, sleep=SLEEP_DEFAULT, diff=False):
             except KeyboardInterrupt as ex:
                 prev_ex = ex
 
-        ts = time.strftime("%Y-%m-%d %H:%M:%S")
         s = None
+        s_time = time.time()
+        ts = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(s_time))
 
         def print_ts():
             print(f"{ts}: ", end='', flush=True)
@@ -62,8 +65,15 @@ def loopStatus(hostname, port, sleep=SLEEP_DEFAULT, diff=False):
         else:
             if s != saved_s:
                 print_ts()
-                print(f"Changed to: {s}", flush=True)
+
+                if saved_s_time is not None:
+                    delta = datetime.timedelta(seconds=s_time - saved_s_time)
+                    print(f"After {delta}, changed to: {s}", flush=True)
+                else:
+                    print(f"Changed to: {s}", flush=True)
+
                 saved_s = s
+                saved_s_time = s_time
 
 def main(argv):
     if not isinstance(argv, list):
