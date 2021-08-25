@@ -67,7 +67,10 @@ def loopStatus(hostname, port, sleep=SLEEP_DEFAULT, diff=False):
                 print_ts()
 
                 if saved_s_time is not None:
-                    delta = datetime.timedelta(seconds=s_time - saved_s_time)
+                    # (As this is a network service intended to be queried
+                    # much less than once per second, try to omit the
+                    # fractional seconds part of the time delta, using round().)
+                    delta = datetime.timedelta(seconds=round(s_time - saved_s_time))
                     print(f"After {delta}, changed to: {s}", flush=True)
                 else:
                     print(f"Changed to: {s}", flush=True)
