@@ -24,7 +24,7 @@ def statusCvn(server):
 def loopStatus(hostname, port, sleep=SLEEP_DEFAULT, diff=False):
     server = mcstatus.MinecraftServer(hostname, port)
 
-    s = None
+    saved_s = None
     first = True
     while True:
         prev_ex = None
@@ -37,7 +37,6 @@ def loopStatus(hostname, port, sleep=SLEEP_DEFAULT, diff=False):
                 prev_ex = ex
 
         ts = time.strftime("%Y-%m-%d %H:%M:%S")
-        prev_s = s
         s = None
 
         def print_ts():
@@ -61,9 +60,10 @@ def loopStatus(hostname, port, sleep=SLEEP_DEFAULT, diff=False):
         if not diff:
             print(s, flush=True)
         else:
-            if s != prev_s:
+            if s != saved_s:
                 print_ts()
                 print(f"Changed to: {s}", flush=True)
+                saved_s = s
 
 def main(argv):
     if not isinstance(argv, list):
